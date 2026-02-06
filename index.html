@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Be My Valentine 💘</title>
+  <title>Forever Yours 💘</title>
 
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -23,18 +23,18 @@
       justify-content: center;
       text-align: center;
       overflow: hidden;
-      cursor: url("https://cur.cursors-4u.net/symbols/sym-1/sym49.cur"), auto;
 
-      /* Animated romantic gradient */
       background: linear-gradient(
         270deg,
-        #ffd6e8,
-        #ffe6f0,
+        #ffd1e8,
+        #ffe4f0,
         #fff1f8,
         #ffdbe9
       );
       background-size: 600% 600%;
-      animation: gradientShift 12s ease infinite;
+      animation: gradientShift 14s ease infinite;
+
+      cursor: url("https://cur.cursors-4u.net/symbols/sym-1/sym49.cur"), auto;
     }
 
     @keyframes gradientShift {
@@ -43,36 +43,35 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Floating heart blobs */
-    .blob {
+    /* HEART OVERLAY */
+    .hearts {
       position: absolute;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle at 30% 30%, #ff8fb8, #ff4d88);
-      opacity: 0.25;
-      filter: blur(60px);
-      animation: float 14s infinite alternate;
-      z-index: 0;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    .blob.one {
-      top: -80px;
-      left: -80px;
+    .heart {
+      position: absolute;
+      color: rgba(255, 77, 136, 0.25);
+      font-size: 20px;
+      animation: floatUp 12s linear infinite;
     }
 
-    .blob.two {
-      bottom: -100px;
-      right: -60px;
-      animation-duration: 18s;
-    }
-
-    @keyframes float {
-      from { transform: translateY(0px); }
-      to { transform: translateY(60px); }
+    @keyframes floatUp {
+      from {
+        transform: translateY(100vh) scale(0.8);
+        opacity: 0;
+      }
+      20% { opacity: 1; }
+      to {
+        transform: translateY(-10vh) scale(1.2);
+        opacity: 0;
+      }
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(6px);
       width: 100%;
       max-width: 420px;
@@ -80,12 +79,18 @@
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.18);
       position: relative;
-      z-index: 2;
+      z-index: 3;
     }
 
     h1 {
       color: #ff4d88;
       margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.6;
     }
 
     button {
@@ -132,9 +137,14 @@
       background: #fff7fb;
     }
 
-    .qr {
-      text-align: center;
-      margin-top: 15px;
+    .photo {
+      margin-top: 20px;
+    }
+
+    .photo img {
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
     .countdown {
@@ -148,138 +158,139 @@
 
 <body>
 
-<!-- Decorative blobs -->
-<div class="blob one"></div>
-<div class="blob two"></div>
+<!-- HEARTS -->
+<div class="hearts" id="hearts"></div>
 
-<!-- BACKGROUND MUSIC -->
+<!-- MUSIC -->
 <audio id="loveMusic" loop>
   <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
 </audio>
 
-<!-- PASSWORD SCREEN -->
+<!-- PASSWORD -->
 <div class="card" id="passwordCard">
-  <h1>🔐 Restricted Access</h1>
-  <p>Enter the password to continue 💌</p>
-  <input id="passwordInput" type="password" placeholder="Hint: what you call me 😉">
-  <button class="yes" onclick="checkPassword()">Enter 💖</button>
+  <h1>Just Us 💌</h1>
+  <p>
+    Some things are meant only for us.<br>
+    Enter the password, my love.
+  </p>
+  <input id="passwordInput" type="password" placeholder="What you call me when it's just us">
+  <button class="yes" onclick="checkPassword()">Unlock 💖</button>
   <p id="passwordError" style="color:#ff4d88;"></p>
 </div>
 
-<!-- QUESTION SCREEN -->
+<!-- QUESTION -->
 <div class="card hidden" id="questionCard">
-  <h1>Will you be my Valentine? 💘</h1>
-  <button class="yes" onclick="sayYes()">YES 💖</button>
+  <h1>My Love, Will You Be My Valentine?</h1>
+  <p>
+    Not just today.<br>
+    Not just this weekend.<br>
+    But every ordinary and extraordinary day.
+  </p>
+  <button class="yes" onclick="sayYes()">Always 💖</button>
 </div>
 
-<button class="no" id="noBtn">NO 🙄</button>
+<button class="no" id="noBtn">Not Possible 😌</button>
 
-<!-- YES SCREEN -->
+<!-- YES -->
 <div class="card hidden" id="yesCard">
-  <h1>WELCOME ABOARD 💃💖</h1>
-  <p>You are officially my Valentine.</p>
+  <h1>You’ve Always Been My Yes 💘</h1>
+  <p>
+    So here’s a little journey I planned —<br>
+    just for us, just because I love you.
+  </p>
 
   <div class="countdown" id="countdown"></div>
 
   <div class="boarding-pass">
-    <strong>🎫 BOARDING PASS</strong><br><br>
+    <strong>🎫 OUR LOVE TICKET</strong><br><br>
     Passenger: <strong>[HIS NAME]</strong><br>
-    Destination: <strong>[WEEKEND GETAWAY]</strong><br>
+    Destination: <strong>[OUR WEEKEND]</strong><br>
     Dates: <strong>[DATES]</strong><br>
-    Seat: <strong>Next to me 💕</strong>
+    Seat: <strong>Right beside my heart 💕</strong>
   </div>
 
-  <button class="yes" onclick="screenshotHint()">📸 Screenshot your boarding pass</button>
-  <p id="shotText" style="color:#ff4d88;"></p>
-
-  <div class="qr">
-    <img id="qrCode" alt="QR Code">
-    <p style="font-size:12px;">Scan for your itinerary 😌</p>
+  <!-- PHOTO -->
+  <div class="photo">
+    <img src="us.jpg" alt="Us together">
+    <p style="font-size:13px;margin-top:8px;">
+      Every place is home when it’s you and me.
+    </p>
   </div>
 
-  <button class="yes" onclick="nextSurprise()">Continue 😏</button>
+  <button class="yes" onclick="nextSurprise()">One More Thing 💌</button>
 </div>
 
-<!-- FINAL SCREEN -->
+<!-- FINAL -->
 <div class="card hidden" id="surpriseCard">
-  <h1>💌 One Last Thing…</h1>
+  <h1>Forever, With You</h1>
   <p>
-    This weekend isn’t just a trip.<br><br>
-    It’s my way of saying<br>
-    <strong>I choose you. Always.</strong>
+    This weekend is just a pause in time —<br>
+    a reminder that no matter where life takes us,<br>
+    I choose you. Still. Always.
   </p>
-  <button class="yes" onclick="finalConfetti()">Come here 💕</button>
+  <button class="yes" onclick="finalConfetti()">Come Here 💕</button>
 </div>
 
 <script>
+  /* HEART GENERATOR */
+  const heartsContainer = document.getElementById("hearts");
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "💗";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = 14 + Math.random() * 20 + "px";
+    heart.style.animationDuration = 8 + Math.random() * 6 + "s";
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 15000);
+  }, 500);
+
   function checkPassword() {
     const input = document.getElementById("passwordInput").value.toLowerCase();
-    const error = document.getElementById("passwordError");
-
     if (["baby","love","wife"].includes(input)) {
-      document.getElementById("passwordCard").classList.add("hidden");
-      document.getElementById("questionCard").classList.remove("hidden");
+      passwordCard.classList.add("hidden");
+      questionCard.classList.remove("hidden");
       moveNoButton();
     } else {
-      error.innerText = "Wrong 😌 but cute guess. Try again.";
+      passwordError.innerText = "Close… but not quite. Try again, my love.";
     }
   }
 
   const noBtn = document.getElementById("noBtn");
-
   function moveNoButton() {
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
-    noBtn.style.left = `${x}px`;
-    noBtn.style.top = `${y}px`;
+    noBtn.style.left = Math.random() * (window.innerWidth - 120) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 60) + "px";
   }
-
   noBtn.addEventListener("mouseenter", moveNoButton);
   noBtn.addEventListener("touchstart", moveNoButton);
 
   function sayYes() {
-    document.getElementById("questionCard").classList.add("hidden");
+    questionCard.classList.add("hidden");
     noBtn.style.display = "none";
-    document.getElementById("yesCard").classList.remove("hidden");
-    document.getElementById("loveMusic").play();
-
+    yesCard.classList.remove("hidden");
+    loveMusic.play();
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-
     startCountdown();
-    generateQR();
   }
 
   function startCountdown() {
-    const targetDate = new Date("2026-02-14T18:00:00").getTime();
+    const target = new Date("2026-02-14T18:00:00").getTime();
     setInterval(() => {
-      const diff = targetDate - Date.now();
+      const diff = target - Date.now();
       if (diff <= 0) {
-        document.getElementById("countdown").innerText = "IT'S TIME 💖";
+        countdown.innerText = "Our moment is here 💖";
         return;
       }
       const d = Math.floor(diff / (1000*60*60*24));
       const h = Math.floor((diff / (1000*60*60)) % 24);
       const m = Math.floor((diff / (1000*60)) % 60);
-      document.getElementById("countdown").innerText =
-        `⏳ ${d}d ${h}h ${m}m to our weekend`;
+      countdown.innerText = `⏳ ${d} days ${h} hours ${m} minutes`;
     }, 1000);
   }
 
-  function generateQR() {
-    const text = encodeURIComponent("Valentine Weekend 💕");
-    document.getElementById("qrCode").src =
-      `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${text}`;
-  }
-
-  function screenshotHint() {
-    document.getElementById("shotText").innerText =
-      "Captured? Good. Ticket required for cuddles 😌💕";
-    confetti({ particleCount: 80, spread: 50, origin: { y: 0.7 } });
-  }
-
   function nextSurprise() {
-    document.getElementById("yesCard").classList.add("hidden");
-    document.getElementById("surpriseCard").classList.remove("hidden");
+    yesCard.classList.add("hidden");
+    surpriseCard.classList.remove("hidden");
   }
 
   function finalConfetti() {
