@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Be My Valentine 💘</title>
+
+  <style>
+    body {
+      font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #fff1f8);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      text-align: center;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      max-width: 400px;
+    }
+
+    h1 {
+      color: #ff4d88;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+      transition: 0.2s;
+    }
+
+    .yes {
+      background-color: #ff4d88;
+      color: white;
+    }
+
+    .no {
+      background-color: #ddd;
+      position: relative;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .boarding-pass {
+      border: 2px dashed #ff4d88;
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" id="main">
+    <h1>Will you be my Valentine? 💘</h1>
+    <button class="yes" onclick="sayYes()">YES 💖</button>
+    <button class="no" id="noBtn" onclick="sayNo()">NO 🙄</button>
+    <p id="noText"></p>
+  </div>
+
+  <div class="card hidden" id="yesScreen">
+    <h1>YAYYYYY 💃💖</h1>
+    <p>Welcome aboard, Valentine 😌</p>
+
+    <div class="boarding-pass">
+      <strong>🎫 Boarding Pass</strong><br><br>
+      Passenger: <strong>[HIS NAME]</strong><br>
+      Destination: <strong>[YOUR WEEKEND PLAN]</strong><br>
+      Date: <strong>[DATES]</strong><br>
+      Seat: <strong>Next to me 💕</strong>
+    </div>
+
+    <h3>📅 Weekend Itinerary</h3>
+    <p>
+      💕 Friday: [Dinner / Surprise]<br>
+      🌿 Saturday: [Activity / Trip]<br>
+      🍷 Evening: [Date Night]<br>
+      ☕ Sunday: [Brunch / Chill]
+    </p>
+  </div>
+
+  <script>
+    const noMessages = [
+      "Hmm. That’s not an option 😌",
+      "Try again 😏",
+      "Incorrect. Please select YES.",
+      "Be serious.",
+      "You really thought NO would work?"
+    ];
+
+    let noCount = 0;
+
+    function sayNo() {
+      const noText = document.getElementById("noText");
+      noText.innerText = noMessages[noCount % noMessages.length];
+      noCount++;
+
+      const noBtn = document.getElementById("noBtn");
+      const x = Math.random() * 200 - 100;
+      const y = Math.random() * 200 - 100;
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function sayYes() {
+      document.getElementById("main").classList.add("hidden");
+      document.getElementById("yesScreen").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
