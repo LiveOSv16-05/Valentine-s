@@ -15,7 +15,6 @@
 
     body {
       font-family: 'Poppins', system-ui, sans-serif;
-      background: linear-gradient(135deg, #ffd6e8, #fff1f8);
       min-height: 100vh;
       margin: 0;
       padding: 16px;
@@ -23,16 +22,65 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      overflow: hidden;
       cursor: url("https://cur.cursors-4u.net/symbols/sym-1/sym49.cur"), auto;
+
+      /* Animated romantic gradient */
+      background: linear-gradient(
+        270deg,
+        #ffd6e8,
+        #ffe6f0,
+        #fff1f8,
+        #ffdbe9
+      );
+      background-size: 600% 600%;
+      animation: gradientShift 12s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating heart blobs */
+    .blob {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle at 30% 30%, #ff8fb8, #ff4d88);
+      opacity: 0.25;
+      filter: blur(60px);
+      animation: float 14s infinite alternate;
+      z-index: 0;
+    }
+
+    .blob.one {
+      top: -80px;
+      left: -80px;
+    }
+
+    .blob.two {
+      bottom: -100px;
+      right: -60px;
+      animation-duration: 18s;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0px); }
+      to { transform: translateY(60px); }
     }
 
     .card {
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(6px);
       width: 100%;
       max-width: 420px;
       padding: 28px;
       border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+      position: relative;
+      z-index: 2;
     }
 
     h1 {
@@ -51,7 +99,7 @@
     }
 
     .yes {
-      background: #ff4d88;
+      background: linear-gradient(135deg, #ff4d88, #ff7aa8);
       color: white;
     }
 
@@ -81,6 +129,7 @@
       border: 2px dashed #ff4d88;
       text-align: left;
       font-size: 14px;
+      background: #fff7fb;
     }
 
     .qr {
@@ -98,6 +147,10 @@
 </head>
 
 <body>
+
+<!-- Decorative blobs -->
+<div class="blob one"></div>
+<div class="blob two"></div>
 
 <!-- BACKGROUND MUSIC -->
 <audio id="loveMusic" loop>
@@ -121,7 +174,7 @@
 
 <button class="no" id="noBtn">NO 🙄</button>
 
-<!-- YES / BOARDING PASS SCREEN -->
+<!-- YES SCREEN -->
 <div class="card hidden" id="yesCard">
   <h1>WELCOME ABOARD 💃💖</h1>
   <p>You are officially my Valentine.</p>
@@ -144,18 +197,10 @@
     <p style="font-size:12px;">Scan for your itinerary 😌</p>
   </div>
 
-  <h3>📅 Weekend Itinerary</h3>
-  <p style="font-size:14px;">
-    💕 Friday: Dinner + surprise<br>
-    🌿 Saturday: Adventure & chill<br>
-    🍷 Evening: Date night<br>
-    ☕ Sunday: Brunch & cuddles
-  </p>
-
   <button class="yes" onclick="nextSurprise()">Continue 😏</button>
 </div>
 
-<!-- FINAL SURPRISE SCREEN -->
+<!-- FINAL SCREEN -->
 <div class="card hidden" id="surpriseCard">
   <h1>💌 One Last Thing…</h1>
   <p>
@@ -167,12 +212,11 @@
 </div>
 
 <script>
-  // PASSWORD CHECK
   function checkPassword() {
     const input = document.getElementById("passwordInput").value.toLowerCase();
     const error = document.getElementById("passwordError");
 
-    if (input === "baby" || input === "love" || input === "wife") {
+    if (["baby","love","wife"].includes(input)) {
       document.getElementById("passwordCard").classList.add("hidden");
       document.getElementById("questionCard").classList.remove("hidden");
       moveNoButton();
@@ -181,7 +225,6 @@
     }
   }
 
-  // NO BUTTON IMPOSSIBLE MODE
   const noBtn = document.getElementById("noBtn");
 
   function moveNoButton() {
@@ -194,80 +237,53 @@
   noBtn.addEventListener("mouseenter", moveNoButton);
   noBtn.addEventListener("touchstart", moveNoButton);
 
-  // YES ACTION
   function sayYes() {
     document.getElementById("questionCard").classList.add("hidden");
     noBtn.style.display = "none";
     document.getElementById("yesCard").classList.remove("hidden");
-
     document.getElementById("loveMusic").play();
 
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
     startCountdown();
     generateQR();
   }
 
-  // COUNTDOWN
   function startCountdown() {
-    const targetDate = new Date("2026-02-14T18:00:00").getTime(); // CHANGE THIS
-
+    const targetDate = new Date("2026-02-14T18:00:00").getTime();
     setInterval(() => {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
-
+      const diff = targetDate - Date.now();
       if (diff <= 0) {
         document.getElementById("countdown").innerText = "IT'S TIME 💖";
         return;
       }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const mins = Math.floor((diff / (1000 * 60)) % 60);
-
+      const d = Math.floor(diff / (1000*60*60*24));
+      const h = Math.floor((diff / (1000*60*60)) % 24);
+      const m = Math.floor((diff / (1000*60)) % 60);
       document.getElementById("countdown").innerText =
-        `⏳ ${days}d ${hours}h ${mins}m to our weekend`;
+        `⏳ ${d}d ${h}h ${m}m to our weekend`;
     }, 1000);
   }
 
-  // QR CODE
   function generateQR() {
-    const text = encodeURIComponent(
-      "Valentine Weekend 💕\nFriday: Dinner\nSaturday: Surprise\nSunday: Brunch"
-    );
-
+    const text = encodeURIComponent("Valentine Weekend 💕");
     document.getElementById("qrCode").src =
       `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${text}`;
   }
 
-  // SCREENSHOT MOMENT
   function screenshotHint() {
     document.getElementById("shotText").innerText =
-      "Captured? Good. This ticket is required for cuddles 😌💕";
-
-    confetti({
-      particleCount: 80,
-      spread: 50,
-      origin: { y: 0.7 }
-    });
+      "Captured? Good. Ticket required for cuddles 😌💕";
+    confetti({ particleCount: 80, spread: 50, origin: { y: 0.7 } });
   }
 
-  // FINAL SURPRISE
   function nextSurprise() {
     document.getElementById("yesCard").classList.add("hidden");
     document.getElementById("surpriseCard").classList.remove("hidden");
   }
 
   function finalConfetti() {
-    confetti({
-      particleCount: 250,
-      spread: 100,
-      origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
   }
 </script>
 
