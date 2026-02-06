@@ -2,50 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Be My Valentine 💘</title>
 
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+      font-family: 'Poppins', system-ui, sans-serif;
       background: linear-gradient(135deg, #ffd6e8, #fff1f8);
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0;
       text-align: center;
+      cursor: url("https://cur.cursors-4u.net/symbols/sym-1/sym49.cur"), auto;
     }
 
     .card {
       background: white;
-      padding: 40px;
-      border-radius: 20px;
+      width: 100%;
+      max-width: 420px;
+      padding: 28px;
+      border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      max-width: 400px;
     }
 
     h1 {
       color: #ff4d88;
+      margin-bottom: 10px;
     }
 
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
       border-radius: 30px;
       border: none;
       cursor: pointer;
-      margin: 10px;
-      transition: 0.2s;
+      margin-top: 12px;
     }
 
     .yes {
-      background-color: #ff4d88;
+      background: #ff4d88;
       color: white;
     }
 
     .no {
-      background-color: #ddd;
-      position: relative;
+      background: #eee;
+      position: absolute;
+      z-index: 10;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      margin-top: 12px;
+      font-size: 16px;
     }
 
     .hidden {
@@ -53,70 +75,201 @@
     }
 
     .boarding-pass {
-      border: 2px dashed #ff4d88;
-      padding: 20px;
-      border-radius: 15px;
       margin-top: 20px;
+      padding: 20px;
+      border-radius: 16px;
+      border: 2px dashed #ff4d88;
       text-align: left;
+      font-size: 14px;
+    }
+
+    .qr {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .countdown {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #ff4d88;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
-  <div class="card" id="main">
-    <h1>Will you be my Valentine? 💘</h1>
-    <button class="yes" onclick="sayYes()">YES 💖</button>
-    <button class="no" id="noBtn" onclick="sayNo()">NO 🙄</button>
-    <p id="noText"></p>
+
+<!-- BACKGROUND MUSIC -->
+<audio id="loveMusic" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+</audio>
+
+<!-- PASSWORD SCREEN -->
+<div class="card" id="passwordCard">
+  <h1>🔐 Restricted Access</h1>
+  <p>Enter the password to continue 💌</p>
+  <input id="passwordInput" type="password" placeholder="Hint: what you call me 😉">
+  <button class="yes" onclick="checkPassword()">Enter 💖</button>
+  <p id="passwordError" style="color:#ff4d88;"></p>
+</div>
+
+<!-- QUESTION SCREEN -->
+<div class="card hidden" id="questionCard">
+  <h1>Will you be my Valentine? 💘</h1>
+  <button class="yes" onclick="sayYes()">YES 💖</button>
+</div>
+
+<button class="no" id="noBtn">NO 🙄</button>
+
+<!-- YES / BOARDING PASS SCREEN -->
+<div class="card hidden" id="yesCard">
+  <h1>WELCOME ABOARD 💃💖</h1>
+  <p>You are officially my Valentine.</p>
+
+  <div class="countdown" id="countdown"></div>
+
+  <div class="boarding-pass">
+    <strong>🎫 BOARDING PASS</strong><br><br>
+    Passenger: <strong>[HIS NAME]</strong><br>
+    Destination: <strong>[WEEKEND GETAWAY]</strong><br>
+    Dates: <strong>[DATES]</strong><br>
+    Seat: <strong>Next to me 💕</strong>
   </div>
 
-  <div class="card hidden" id="yesScreen">
-    <h1>YAYYYYY 💃💖</h1>
-    <p>Welcome aboard, Valentine 😌</p>
+  <button class="yes" onclick="screenshotHint()">📸 Screenshot your boarding pass</button>
+  <p id="shotText" style="color:#ff4d88;"></p>
 
-    <div class="boarding-pass">
-      <strong>🎫 Boarding Pass</strong><br><br>
-      Passenger: <strong>[HIS NAME]</strong><br>
-      Destination: <strong>[YOUR WEEKEND PLAN]</strong><br>
-      Date: <strong>[DATES]</strong><br>
-      Seat: <strong>Next to me 💕</strong>
-    </div>
-
-    <h3>📅 Weekend Itinerary</h3>
-    <p>
-      💕 Friday: [Dinner / Surprise]<br>
-      🌿 Saturday: [Activity / Trip]<br>
-      🍷 Evening: [Date Night]<br>
-      ☕ Sunday: [Brunch / Chill]
-    </p>
+  <div class="qr">
+    <img id="qrCode" alt="QR Code">
+    <p style="font-size:12px;">Scan for your itinerary 😌</p>
   </div>
 
-  <script>
-    const noMessages = [
-      "Hmm. That’s not an option 😌",
-      "Try again 😏",
-      "Incorrect. Please select YES.",
-      "Be serious.",
-      "You really thought NO would work?"
-    ];
+  <h3>📅 Weekend Itinerary</h3>
+  <p style="font-size:14px;">
+    💕 Friday: Dinner + surprise<br>
+    🌿 Saturday: Adventure & chill<br>
+    🍷 Evening: Date night<br>
+    ☕ Sunday: Brunch & cuddles
+  </p>
 
-    let noCount = 0;
+  <button class="yes" onclick="nextSurprise()">Continue 😏</button>
+</div>
 
-    function sayNo() {
-      const noText = document.getElementById("noText");
-      noText.innerText = noMessages[noCount % noMessages.length];
-      noCount++;
+<!-- FINAL SURPRISE SCREEN -->
+<div class="card hidden" id="surpriseCard">
+  <h1>💌 One Last Thing…</h1>
+  <p>
+    This weekend isn’t just a trip.<br><br>
+    It’s my way of saying<br>
+    <strong>I choose you. Always.</strong>
+  </p>
+  <button class="yes" onclick="finalConfetti()">Come here 💕</button>
+</div>
 
-      const noBtn = document.getElementById("noBtn");
-      const x = Math.random() * 200 - 100;
-      const y = Math.random() * 200 - 100;
-      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+<script>
+  // PASSWORD CHECK
+  function checkPassword() {
+    const input = document.getElementById("passwordInput").value.toLowerCase();
+    const error = document.getElementById("passwordError");
+
+    if (input === "baby" || input === "love" || input === "wife") {
+      document.getElementById("passwordCard").classList.add("hidden");
+      document.getElementById("questionCard").classList.remove("hidden");
+      moveNoButton();
+    } else {
+      error.innerText = "Wrong 😌 but cute guess. Try again.";
     }
+  }
 
-    function sayYes() {
-      document.getElementById("main").classList.add("hidden");
-      document.getElementById("yesScreen").classList.remove("hidden");
-    }
-  </script>
+  // NO BUTTON IMPOSSIBLE MODE
+  const noBtn = document.getElementById("noBtn");
+
+  function moveNoButton() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+  }
+
+  noBtn.addEventListener("mouseenter", moveNoButton);
+  noBtn.addEventListener("touchstart", moveNoButton);
+
+  // YES ACTION
+  function sayYes() {
+    document.getElementById("questionCard").classList.add("hidden");
+    noBtn.style.display = "none";
+    document.getElementById("yesCard").classList.remove("hidden");
+
+    document.getElementById("loveMusic").play();
+
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    startCountdown();
+    generateQR();
+  }
+
+  // COUNTDOWN
+  function startCountdown() {
+    const targetDate = new Date("2026-02-14T18:00:00").getTime(); // CHANGE THIS
+
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").innerText = "IT'S TIME 💖";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+
+      document.getElementById("countdown").innerText =
+        `⏳ ${days}d ${hours}h ${mins}m to our weekend`;
+    }, 1000);
+  }
+
+  // QR CODE
+  function generateQR() {
+    const text = encodeURIComponent(
+      "Valentine Weekend 💕\nFriday: Dinner\nSaturday: Surprise\nSunday: Brunch"
+    );
+
+    document.getElementById("qrCode").src =
+      `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${text}`;
+  }
+
+  // SCREENSHOT MOMENT
+  function screenshotHint() {
+    document.getElementById("shotText").innerText =
+      "Captured? Good. This ticket is required for cuddles 😌💕";
+
+    confetti({
+      particleCount: 80,
+      spread: 50,
+      origin: { y: 0.7 }
+    });
+  }
+
+  // FINAL SURPRISE
+  function nextSurprise() {
+    document.getElementById("yesCard").classList.add("hidden");
+    document.getElementById("surpriseCard").classList.remove("hidden");
+  }
+
+  function finalConfetti() {
+    confetti({
+      particleCount: 250,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+  }
+</script>
+
 </body>
 </html>
